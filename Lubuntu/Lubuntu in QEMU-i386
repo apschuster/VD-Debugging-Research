@@ -1,4 +1,4 @@
-wget http://cdimages.ubuntu.com/lubuntu/releases/yakkety/release/lubuntu-16.10-alternate-i386.iso
-/usr/bin/qemu-img create -f qcow2 lubuntu.img 5G
-/usr/bin/qemu-system-i386 -hda lubuntu.img -cdrom lubuntu-16.10-alternate-i386.iso -boot d -m 640 -cpu pentium2
-/usr/bin/qemu-system-i386 -hda lubuntu.img -m 640 -cpu pentium2
+wget http://cdimages.ubuntu.com/lubuntu/releases/yakkety/release/lubuntu-16.10-alternate-i386.iso #obtain .iso for installation
+/usr/bin/qemu-img create -f qcow2 lubuntu.img 5G #create the disk image to install to
+/usr/bin/qemu-system-i386 -hda lubuntu.img -cdrom lubuntu-16.10-alternate-i386.iso -boot d -m 640 -cpu pentium2 #boot with virtual cdrom containing .iso, installing the OS 
+/usr/bin/qemu-system-i386 -hda lubuntu.img -m 640 -cpu pentium2 #use this command to boot normally (once installed)
