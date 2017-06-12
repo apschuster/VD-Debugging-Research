@@ -1,3 +1,2 @@
 wget https://downloads.openwrt.org/snapshots/trunk/realview/generic/openwrt-realview-vmlinux-initramfs.elf
 /usr/bin/qemu-system-arm -M realview-eb-mpcore -kernel openwrt-realview-vmlinux-initramfs.elf -net nic -net user -nographic
-cat /proc/cpuinfo   //should show that it is an ARM processor
