@@ -1,0 +1,9 @@
+PHYSICAL SYSTEM
+OS: Xubuntu 17.04
+CPU: Intel(R) Core(TM) i5-4570 CPU @ 3.20 GHz
+RAM: 16347996 KB
+
+QEMU
+Version: 2.8.0
+
+*Unless stated otherwise, all commands are to be executed in the bash terminal on Xubuntu.
