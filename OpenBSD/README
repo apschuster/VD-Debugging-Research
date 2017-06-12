@@ -1,1 +1,1 @@
-The commands in "OpenBSD in QEMU-i386" starts an emulation of OpenBSD with 640 MB of RAM, a Pentium 2 processor, and 5 GB of hard disk space.
+The commands in "OpenBSD in QEMU-i386" starts an emulation of OpenBSD with 128 MB of RAM, a Pentium 2 processor, and 2 GB of hard disk space.
