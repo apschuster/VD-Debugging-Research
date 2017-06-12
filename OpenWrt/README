@@ -1,1 +1,1 @@
-
+The commands in "OpenWrt in QEMU-ARM" starts an emulation of OpenWrt using files provided by OpenWrt. These files are assumably virtual OS/Hardware to drive OpenWrt. I have not been able to find documention on them. 
