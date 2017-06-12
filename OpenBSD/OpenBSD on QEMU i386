@@ -1,4 +1,0 @@
-wget https://openbsd.mirror.constant.com/pub/OpenBSD/6.1/i386/install61.iso
-/usr/bin/qemu-img create -f qcow2 openbsd.img 2G
-/usr/bin/qemu-system-i386 -hda openbsd.img -cdrom install61.iso -boot d -m 128
-/usr/bin/qemu-system-i386 -hda openbsd.img 
