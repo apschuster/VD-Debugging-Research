@@ -5,6 +5,7 @@ RAM: 16347996 KB
 
 QEMU
 #Built by using the following commands:
+sudo apt-get install git libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev #to resolve dependencies
 wget http://download.qemu-project.org/qemu-2.9.0.tar.xz
 tar xvJf qemu-2.9.0.tar.xz
 cd qemu-2.9.0
