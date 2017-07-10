@@ -4,6 +4,11 @@ CPU: Intel(R) Core(TM) i5-4570 CPU @ 3.20 GHz
 RAM: 16347996 KB
 
 QEMU
-Version: 2.8.0
+#Built by using the following commands:
+wget http://download.qemu-project.org/qemu-2.9.0.tar.xz
+tar xvJf qemu-2.9.0.tar.xz
+cd qemu-2.9.0
+./configure --enable-debug
+make
 
 *Unless stated otherwise, all commands are to be executed in the bash terminal on Xubuntu.
