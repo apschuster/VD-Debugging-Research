@@ -1,8 +1,12 @@
-/home/darinellis/qemu/bin/debug/native/arm-softmmu/qemu-system-arm -M versatilepb -m 128M -kernel test.bin -serial stdio -serial telnet:localhost:1235,server -serial telnet:localhost:1236,server -s -S #in directory with test.bin - creates QEMU instance
+/home/darinellis/qemu-2.9.0/arm-softmmu/qemu-system-arm -M versatilepb -m 128M -kernel test.bin -serial stdio -serial telnet:localhost:1235,server -serial telnet:localhost:1236,server -s -S#in directory with test.bin - creates QEMU instance
 telnet 127.0.0.1 1235 #in second terminal
 telnet 127.0.0.1 1236 #in third terminal
-/home/darinellis/arm-toolchains/gcc-arm-none-eabi-6-2017-q1-update/bin/arm-none-eabi-gdb #in fourth terminal, in directory with test.elf
-########## inside gdb ########
+/home/darinellis/arm-toolchains/gcc-arm-none-eabi-6-2017-q1-update/bin/arm-none-eabi-gdb #in fourth terminal, in directory with test.elf - this gdb looks at guest programs
+########## inside arm-gdb ########
 target remote localhost:1234
 symbol-file test.elf
 #perform commands as desired
+##################################
+
+ps -aux #to find the process id (PID) of the qemu instance
+gdb -p <qemu PID>
