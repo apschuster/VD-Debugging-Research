@@ -9,7 +9,7 @@ sudo apt-get install git libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev #t
 wget http://download.qemu-project.org/qemu-2.9.0.tar.xz
 tar xvJf qemu-2.9.0.tar.xz
 cd qemu-2.9.0
-./configure --enable-debug --enable-gtk
+./configure --enable-debug --enable-gtk --extra-cflags=-O0
 make
 
 *Unless stated otherwise, all commands are to be executed in the bash terminal on Xubuntu.
