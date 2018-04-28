@@ -1,0 +1,21 @@
+SetFuncBps - Darin Ellis 4/27/2018
+
+OVERVIEW
+SetFuncBps is a bash script that will automatically generate a gdb script that will
+set breakpoints at the certain named functions for any number of given binaries. 
+
+It uses the "readelf" program to obtain the symbols of the binary and "awk" to
+select the functions with a variation of the strings "read" or "write" in their names. 
+It then invokes the provided "WriteBps" program to generate the .gdb file. You can
+then invoke this .gdb file when using gdb.
+
+INSTALLATION
+SetFuncBps runs on "bash". It requires the "readelf" and "awk" programs to be on
+your computer. It also requires "WriteBps" to run. WriteBps can be compiled by invoking
+the provided Makefile.
+
+USAGE
+Invoke the script with:
+"./SetFuncBps.sh [filenames]"
+Where [filenames] is the path(s) to the file(s) you wish to generate the .gdb file(s) 
+for.
