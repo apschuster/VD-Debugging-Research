@@ -36,6 +36,15 @@ static inline char upperchar(char c) {
         return c;
     }
 }
+
+volatile unsigned int * const UART0DR = (unsigned int *)0x101f1000;
+
+void print_uart0(const char *s) {
+	while(*s != '\0') { /* Loop until end of string */
+		*UART0DR = *s; /* Transmit char */
+		s++; /* Next char */
+	}
+}
     
 //modify this so that it stores a buffer and clears it on a ';'
 static void uart_echo_buffer(pl011_T *uart, char* buffer, int* position) {
@@ -44,13 +53,17 @@ static void uart_echo_buffer(pl011_T *uart, char* buffer, int* position) {
         buffer[*position] = upperchar(uart->DR);
 		*position++;//iterate the position placement
     }
+	const char *printBuffer = (const char *)buffer;
+	print_uart0(printBuffer);
+	/*
 	int iterations = 0;
 	char* s = buffer;//set pointer to start of buffer
 	while(*s != '\0' && iterations < 100) { //Loop until end of string
-		uart->DR = *s; /* Transmit char */
-		s++; /* Next char */
+		uart->DR = *s; //Transmit char
+		s++; //Next char
 		iterations++;//make sure to count iterations so as not to overflow buffer
 	}
+	*/
 }
 
 void c_entry() {
