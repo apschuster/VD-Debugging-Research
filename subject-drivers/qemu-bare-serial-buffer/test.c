@@ -47,14 +47,14 @@ void print_uart0(const char *s) {
 }
     
 //modify this so that it stores a buffer and clears it on a ';'
-static void uart_echo_buffer(pl011_T *uart, char* buffer, int* position) {
+static int uart_echo_buffer(pl011_T *uart, char* buffer, int position) {
     if ((uart->FR & RXFE) == 0) {
         while(uart->FR & TXFF);
-        buffer[*position] = upperchar(uart->DR);
-		*position++;//iterate the position placement
-    }
-	const char *printBuffer = (const char *)buffer;
-	print_uart0(printBuffer);
+        buffer[position] = upperchar(uart->DR);
+		position++;//iterate the position placement
+		const char *printBuffer = (const char *)buffer;
+		print_uart0(printBuffer);
+	}
 	/*
 	int iterations = 0;
 	char* s = buffer;//set pointer to start of buffer
@@ -64,16 +64,22 @@ static void uart_echo_buffer(pl011_T *uart, char* buffer, int* position) {
 		iterations++;//make sure to count iterations so as not to overflow buffer
 	}
 	*/
+	return position;
 }
 
 void c_entry() {
 	//MAKE SURE TO CHECK MAX SIZE
 	char buffer[100];
 	int position;
-    for(;;) {
-        uart_echo_buffer(UART0, buffer, &position);
-        //uart_echo(UART1);
-        //uart_echo(UART2);
-    }
+	//zero out the buffer
+	for(int c = 0; c < 100; c++)
+	{
+		buffer[c] = '\0';
+	}
+	for(;;) {
+		position = uart_echo_buffer(UART0, buffer, position);
+		//uart_echo(UART1);
+		//uart_echo(UART2);
+	}
 }
 
