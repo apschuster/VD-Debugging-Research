@@ -51,24 +51,40 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position) {
     if ((uart->FR & RXFE) == 0) {
         while(uart->FR & TXFF);
         buffer[position] = upperchar(uart->DR);
+		//if we recieve the clearing character or we reach the end of buffer
+		//note that we need a zero byte at the end of the buffer so we
+		//reset once we fill the last bit in the buffer
+		if( (buffer[position] == ';') || (position > 98) )
+		{
+			if(buffer == "QUIT")
+			{
+				print_uart0("Exiting Program\n");
+				return(-1);
+			}
+			//zero out buffer
+			for(int c = 0; c < 100; c++)
+			{
+				buffer[c] = '\0';
+			}
+			print_uart0("Clearing Buffer\n");
+			//return position = 0
+			return 0;
+		}
 		position++;//iterate the position placement
 		const char *printBuffer = (const char *)buffer;
 		print_uart0(printBuffer);
+		print_uart0("\n");
 	}
-	/*
-	int iterations = 0;
-	char* s = buffer;//set pointer to start of buffer
-	while(*s != '\0' && iterations < 100) { //Loop until end of string
-		uart->DR = *s; //Transmit char
-		s++; //Next char
-		iterations++;//make sure to count iterations so as not to overflow buffer
-	}
-	*/
 	return position;
 }
 
-void c_entry() {
-	//MAKE SURE TO CHECK MAX SIZE
+void c_entry() 
+{
+	print_uart0("This program will store a buffer of your input and echo it back to you after every new input.\n");
+	print_uart0("All inputs will be capitalized.\n");
+	print_uart0("Entering a \";\" character will clear the buffer.\n");
+	print_uart0("If you wish to quit the program, clear the buffer and enter \"QUIT\" and clear it again.\n");
+
 	char buffer[100];
 	int position;
 	//zero out the buffer
@@ -78,8 +94,10 @@ void c_entry() {
 	}
 	for(;;) {
 		position = uart_echo_buffer(UART0, buffer, position);
-		//uart_echo(UART1);
-		//uart_echo(UART2);
+		if(position < 0)
+		{
+			return;
+		}
 	}
 }
 
