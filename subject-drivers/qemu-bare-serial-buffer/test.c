@@ -37,6 +37,17 @@ static inline char upperchar(char c) {
     }
 }
 
+/*
+Since our toolchain doesn't support the c standard library version of strcmp
+I am implimenting a simple recurrsive version here
+*/
+int strcmp(const char* a, const char* b)
+{
+	if (! (*a | *b)) 
+		return 0;
+	return (*a != *b) ? *a-*b : strcmp(++a, ++b);
+}
+
 volatile unsigned int * const UART0DR = (unsigned int *)0x101f1000;
 
 void print_uart0(const char *s) {
@@ -56,7 +67,7 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position) {
 		//reset once we fill the last bit in the buffer
 		if( (buffer[position] == ';') || (position > 98) )
 		{
-			if(buffer == "QUIT")
+			if(strcmp(buffer, "QUIT;") == 0)
 			{
 				print_uart0("Exiting Program\n");
 				return(-1);

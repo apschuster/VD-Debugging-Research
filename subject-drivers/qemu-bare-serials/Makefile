@@ -5,7 +5,7 @@ test.elf: startup.o test.o
 	arm-none-eabi-ld -T test.ld test.o startup.o -o test.elf
 
 test.o:
-	arm-none-eabi-gcc -c -mcpu=arm926ej-s test.c -o test.o
+	arm-none-eabi-gcc -g -c -mcpu=arm926ej-s test.c -o test.o
 
 startup.o:
 	arm-none-eabi-as -mcpu=arm926ej-s startup.s -o startup.o
