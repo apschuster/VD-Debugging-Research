@@ -1,2 +1,2 @@
 all:
-	g++ -o WriteBps WriteBps.cpp
+	g++ -o ConstructBpFile WriteBps.cpp

@@ -32,6 +32,7 @@ int main(int argc, char * argv[])
 
 	string line;
 	string bpCommand;
+	int bpCount = 0;
 	while(symNameFile.good())
 	{
 		getline(symNameFile, line);
@@ -39,8 +40,18 @@ int main(int argc, char * argv[])
 		{
 			bpCommand = "break " + line;
 			bpFile << bpCommand << '\n';
+			bpCount++;
 		}
 	}
+
+	for(int i = 0; i < bpCount; i++)
+	{
+		bpFile << "info locals" << '\n'
+			<< "info args" << '\n'
+			<< "continue" << '\n';
+	}
+
+	bpFile << "quit" << '\n';
 
 	symNameFile.close();
 	bpFile.close();
