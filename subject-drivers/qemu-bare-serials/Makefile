@@ -13,6 +13,7 @@ startup.o:
 clean:
 	rm -rf *.o
 	rm -rf test.elf
+	rm -rf test.bin
 
 run: test.bin
 	qemu-arm -m 128M -M versatilepb -m 128M -kernel $< -serial stdio
