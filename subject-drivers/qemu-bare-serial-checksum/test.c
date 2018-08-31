@@ -93,8 +93,12 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position) {
 			{
 				sum += buffer[c];
 			}
-			//DO A PROPER TRANSLATION OF SUM INTO STRING
+			//make sure the buffer has enough space for the digits
 			char stringSum[(sum/10)+2];
+			for(int c = 0; c < 100; c++)//zero out the buffer
+			{
+				stringSum[c] = '\0';
+			}
 			itoa(sum, stringSum, 10);
 			const char *printSum = (const char *) stringSum;
 			print_uart0(printSum);
@@ -114,6 +118,7 @@ void c_entry()
 	print_uart0("This program will store a buffer of your input and echo it back to you after every new input.\n");
 	print_uart0("All inputs will be capitalized.\n");
 	print_uart0("Entering a \";\" character will clear the buffer.\n");
+	print_uart0("Entering a \":\" character will display the sum of the buffer's contents.\n");
 	print_uart0("If you wish to quit the program, clear the buffer and enter \"QUIT\" and clear it again.\n");
 
 	char buffer[100];
