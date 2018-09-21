@@ -2,6 +2,7 @@
 #define STACK_H
 
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct
 {	
@@ -13,8 +14,9 @@ typedef struct
 	char* (*push) (struct string_stack* self, char* entry);
 	char (*isFull) (struct string_stack* self);
 	char (*isEmpty) (struct string_stack* self);
-	int stack_pointer;
-	char** stack;
+	int size;//for storing the current maximum number of strings in stack
+	int stack_pointer;//for storing the index of the current top of stack
+	char** stack;//the stack itself is an array of pointers, dynamically allocated
 } string_stack;
 
 //the constructor for the stack
