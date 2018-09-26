@@ -2,7 +2,7 @@ test.bin: test.elf
 	arm-none-eabi-objcopy -O binary test.elf test.bin
 
 test.elf: startup.o stack.o test.o
-	arm-none-eabi-ld -T test.ld test.o stack.o startup.o -o test.elf ~/research/newlib-3.0.0/arm-none-eabi/newlib/libc/stdlib/lib.a /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/libgcc.a ~/research/newlib-3.0.0/arm-none-eabi/newlib/libc/reent/lib.a
+	arm-none-eabi-ld -T test.ld test.o stack.o startup.o -o test.elf ~/research/newlib-3.0.0/arm-none-eabi/newlib/libc/stdlib/lib.a /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/libgcc.a ~/research/newlib-3.0.0/arm-none-eabi/newlib/libc/reent/lib.a ~/research/newlib-3.0.0/arm-none-eabi/newlib/libc/string/lib.a
 
 test.o: stack.h test.c
 	arm-none-eabi-gcc -Wall -g -c -mcpu=arm926ej-s test.c -o test.o
