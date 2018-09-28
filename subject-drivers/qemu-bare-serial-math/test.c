@@ -91,24 +91,40 @@ int modulus(string_stack stack)
 
 }
 //end operands
+
+//TO DO:
+//This function checks if a given string is a valid command
+//return zero if invalid, nonzero otherwise
+char isValid(char *command)
+{
+	return 0;
+}
     
 //This loop will handle the buffer I/O
-static int uart_echo_buffer(pl011_T *uart, char* buffer, int position) {
+static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_stack *stack) 
+{
     if ((uart->FR & RXFE) == 0) 
 	{
         	while(uart->FR & TXFF) { };
 		buffer[position] = upperchar(uart->DR);
 
-		//TO DO: CAPTURE BACKSPACE
 		//it may be simpler to pick a different deletion character
 		if (buffer[position] == 8)
 		{
-			
+			//make sure we don't delete beyond current line
+			if(position > 0)
+			//replace previous printed character with blank
+			print_uart0("\b\00");
+			//replace current and previous character with blank
+			buffer[position] = '\00';
+			position--;
+			buffer[position] = '\00';
+			return position;
 		}
 
 		//if we recieve the submission character (Enter) or we reach the end of buffer
 		//note that we need a zero byte at the end of the buffer so we reset once we fill the last bit in the buffer
-		if( (buffer[position] == '\13') || (position > 98) )
+		else if( (buffer[position] == '\13') || (position > 98) )
 		{
 			if(strcmp(buffer, "QUIT\13") == 0)
 			{
@@ -120,9 +136,14 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position) {
 			{
 				
 			}
+
 			//TO DO: PLACE THE BUFFERED COMMAND IN THE STACK
 			//ALSO CHECK IF COMMAND IS VALID
-
+			if(isValid(buffer))
+			{
+				//TO DO: Strip enter character
+				stack->push(buffer);
+			}
 
 			//zero out buffer
 			for(int c = 0; c < 100; c++)
@@ -176,13 +197,16 @@ void c_entry()
 
 	char buffer[100];
 	int position;
+	string_stack instruction_stack;
+	instruction_stack = instruction_stack.create();
 	//zero out the buffer
 	for(int c = 0; c < 100; c++)
 	{
 		buffer[c] = '\0';
 	}
-	for(;;) {
-		position = uart_echo_buffer(UART0, buffer, position);
+	for(;;) 
+	{
+		position = uart_echo_buffer(UART0, buffer, position, instruction_stack);
 		if(position < 0)
 		{
 			return;

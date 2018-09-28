@@ -82,13 +82,28 @@ void resize(string_stack* self)
 //set stack_pointer as one less, return previous top string
 char* pop(string_stack* self)
 {
-
+	//make sure there's something to pop
+	if(self->stack[self->stack_pointer] != NULL)
+	{
+		//store the top of the stack in result
+		char* result = self->stack[self->stack_pointer];
+		//deiterate stack_pointer
+		self->stack_pointer--;
+		return result;
+	}
+	return NULL;//if there's nothing on top of the stack, return NULL
 }
 
 //return the top string on the stack
 char* top(string_stack* self)
 {
-
+	//make sure there's something to look at
+	if(self->stack[self->stack_pointer] != NULL)
+	{
+		//store the top of the stack in result
+		return self->stack[self->stack_pointer];
+	}
+	return NULL;//if there's nothing on top of the stack, return NULL
 }
 
 //iterate stack_pointer, insert entry at this location
@@ -107,11 +122,13 @@ void push(string_stack* self, char* entry)
 //return 0 if stack is not full, return nonzero if it is full
 char isFull(string_stack* self)
 {
-
+	//the stack is full if the stack pointer is greater than or equal to the size
+	return self->stack_pointer >= (self->size);
 }
 
 //return 0 if stack is empty, return nonzero if it is empty
 char isEmpty(string_stack* self)
 {
-
+	//stack is empty if stack pointer is less than 0
+	return self->stack_pointer < 0;
 }
