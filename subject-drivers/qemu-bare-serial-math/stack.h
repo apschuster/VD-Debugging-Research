@@ -5,20 +5,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct
+typedef struct string_stack string_stack;
+
+struct string_stack
 {	
-	struct string_stack* (*create) ();
-	void (*destroy) (struct string_stack* self);
-	void (*resize) (struct string_stack* self);
-	char* (*pop) (struct string_stack* self);
-	char* (*top) (struct string_stack* self);
-	char* (*push) (struct string_stack* self, char* entry);
-	char (*isFull) (struct string_stack* self);
-	char (*isEmpty) (struct string_stack* self);
+	string_stack* (*create) ();
+	void (*destroy) (string_stack* self);
+	void (*resize) (string_stack* self);
+	char* (*pop) (string_stack* self);
+	char* (*top) (string_stack* self);
+	char* (*push) (string_stack* self, char* entry);
+	char (*isFull) (string_stack* self);
+	char (*isEmpty) (string_stack* self);
 	int size;//for storing the current maximum number of strings in stack
 	int stack_pointer;//for storing the index of the current top of stack
 	char** stack;//the stack itself is an array of pointers, dynamically allocated
-} string_stack;
+};
 
 //the constructor for the stack
 string_stack* create();

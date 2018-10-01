@@ -2,6 +2,13 @@
 //#include <stdlib.h>
 #include "stack.h"
 
+//The command codes
+const char additionCode = 1;
+const char subtractionCode = 2;
+const char multiplicationCode = 3;
+const char divisionCode = 4;
+const char modulusCode = 5;
+
 enum {
     RXFE = 0x10,//recieve flag
     TXFF = 0x20,//transmit flag
@@ -92,12 +99,66 @@ int modulus(string_stack stack)
 }
 //end operands
 
-//TO DO:
-//This function checks if a given string is a valid command
+//This function checks if the given command is a valid command entry
+//If the entry is a command, it will return the appropriate command value
+//Otherwise, it will return 0
+char isCommand(char *command)
+{
+	/*
+	acceptable strings for addition:
+		"+"
+		"ADD"
+	*/
+	if( (strcmp(command, "+") == 0) || (strcmp(command, "ADD") == 0) )
+		return additionCode;//uses constant for addition value
+	/*
+	acceptable strings for subtraction:
+		"-"
+		"SUB"
+		"SUBTRACT"
+	*/
+	if( (strcmp(command, "-") == 0) || (strcmp(command, "SUB") == 0) || (strcmp(command, "SUBTRACT") == 0) )
+		return subtractionCode;
+	/*
+	acceptable strings for multiplication:
+		"*"
+		"MUL"
+		"MULTIPLY"
+	*/
+	if( (strcmp(command, "*") == 0) || (strcmp(command, "MUL") == 0) || (strcmp(command, "MULTIPLY") == 0) )
+		return multiplicationCode;
+	/*
+	acceptable strings for division:
+		"/"
+		"DIV"
+		"DIVIDE"
+	*/
+	if( (strcmp(command, "/") == 0) || (strcmp(command, "DIV") == 0) || (strcmp(command, "DIVIDE") == 0) )
+		return divisionCode;
+	/*
+	acceptable strings for modulus:
+		"%"
+		"MOD"
+		"MODULUD"
+	*/
+	if( (strcmp(command, "%") == 0) || (strcmp(command, "MOD") == 0) || (strcmp(command, "MODULUS") == 0) )
+		return modulusCode;
+	return 0;
+}
+//this function checks if a given command is only numerical
+char isNum(char *command)
+{
+	char result = 1;//result starts true
+	//result is &'d with whether each char in command is numerical
+	for(int c = 0; command[c] != '\00'; c ++)
+		result &= (command[c] < 58 && command[c] > 47);
+	return result;
+}
+//This function checks if a given string is a valid entry
 //return zero if invalid, nonzero otherwise
 char isValid(char *command)
 {
-	return 0;
+	return isCommand(command) && isNum(command);
 }
     
 //This loop will handle the buffer I/O
@@ -113,12 +174,14 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
 		{
 			//make sure we don't delete beyond current line
 			if(position > 0)
-			//replace previous printed character with blank
-			print_uart0("\b\00");
-			//replace current and previous character with blank
-			buffer[position] = '\00';
-			position--;
-			buffer[position] = '\00';
+			{
+				//replace previous printed character with blank
+				print_uart0("\b\00");
+				//blank current and previous character
+				buffer[position] = '\00';
+				position--;
+				buffer[position] = '\00';
+			}
 			return position;
 		}
 
@@ -137,12 +200,14 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
 				
 			}
 
-			//TO DO: PLACE THE BUFFERED COMMAND IN THE STACK
-			//ALSO CHECK IF COMMAND IS VALID
+			//place buffered command in stack
 			if(isValid(buffer))
 			{
-				//TO DO: Strip enter character
-				stack->push(buffer);
+				//Strip enter character
+				for(int i = 0; buffer [i] != '\00'; i++)
+					if(buffer[i] == '\13')
+						buffer[i] = '\00';
+				stack->push(stack, buffer);
 			}
 
 			//zero out buffer
@@ -151,8 +216,12 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
 				buffer[c] = '\0';
 			}
 
-			//TO DO: PRINT THE LAST LINE SUBMITTED
+			//PRINT THE LAST LINE SUBMITTED
 			print_uart0("Line Recorded\n");
+			char* lastSubmission;
+			strcpy(lastSubmission, stack->top(stack));
+			print_uart0((const char*)lastSubmission);
+			print_uart0("\n");
 			return 0;
 		}
 
@@ -180,25 +249,27 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
 
 		//TO DO: REPLACE CURRENT LINE RATHER THAN PRINT NEW ONE
 		position++;//iterate the position placement
+		//we will try to delete the previously printed line by sending the corrisponding VT100 escape code 
+		print_uart0("27[2K");
 		const char *printBuffer = (const char *)buffer;
 		print_uart0(printBuffer);
-		print_uart0("\n");
 	}
 	return position;
 }
 
 void c_entry() 
 {
-	print_uart0("This program will store a buffer of your input and echo it back to you after every new input.\n");
+	//TO DO: make proper instructions
+	print_uart0("This program will store a buffer of your input.\n");
 	print_uart0("All inputs will be capitalized.\n");
-	print_uart0("Entering a \";\" character will clear the buffer.\n");
-	print_uart0("Entering a \":\" character will display the sum of the buffer's contents.\n");
-	print_uart0("If you wish to quit the program, clear the buffer and enter \"QUIT\" and clear it again.\n");
+	print_uart0("Entering a \";\" character will submit the buffer to the stack.\n");
+	print_uart0("The stack can be run by entering \"RUN\".\n");
+	print_uart0("If you wish to quit the program, enter \"QUIT\" and submit.\n");
 
 	char buffer[100];
 	int position;
-	string_stack instruction_stack;
-	instruction_stack = instruction_stack.create();
+	string_stack* instruction_stack;
+	instruction_stack = instruction_stack->create();
 	//zero out the buffer
 	for(int c = 0; c < 100; c++)
 	{
