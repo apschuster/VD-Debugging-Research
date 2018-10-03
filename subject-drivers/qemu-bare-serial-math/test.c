@@ -66,38 +66,115 @@ void print_uart0(const char *s) {
 	}
 }
 
-//TO DO: CREATE RUN FUNCTION
+//the base command control function
 int run_stack(string_stack stack)
 {
+	//the top of the stack should always be a command when this is called
+	if( ! char commandCode = isCommand(stack->pop(stack)) )
+		//if not, return 0
+		return 0;
 
+	switch (commandCode)
+	{
+		//we now check the command code against the operation codes
+		case subtractionCode:
+			//have the subtract function handle the two operands
+			return subtract(stack);
+			break;
+		case additionCode:
+			//have the addition function handle the two operands
+			return add(stack);
+			break;
+		case multiplicationCode:
+			//have the multiply function handle the two operands
+			return multiply(stack);
+			break;
+		case divisionCode:
+			//have the division function handle the two operands
+			return divide(stack);
+			break;
+		case modulusCode:
+			//have the modulus function handle the two operands
+			return modulus(stack);
+			break;
+		default:
+			return 0;//if there is no match, return 0
+	}
 }
-//TO DO: CREATE OPERAND FUNCTIONS
-//begin operands
+
+//begin operations
+//note: the command itself should have been popped off,
+//we need only deal with the two operands
 int subtract(string_stack stack)
 {
-
+	int operand[2];
+	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
+		return 0;
+	operand[0] = stack->pop(stack);//put the first operand where it belongs
+	
+	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
+		operand[1] = run_stack(stack);//assume top is a command
+		//note: this is how the operations are chained together
+	
+	return operand[0] - operand[1];//subtract the two operands
 }
 
 int add(string_stack stack)
 {
-
+	int operand[2];
+	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
+		return 0;
+	operand[0] = stack->pop(stack);//put the first operand where it belongs
+	
+	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
+		operand[1] = run_stack(stack);//assume top is a command
+		//note: this is how the operations are chained together
+	
+	return operand[0] + operand[1];//add the two operands
 }
 
 int multiply(string_stack stack)
 {
-
+	int operand[2];
+	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
+		return 0;
+	operand[0] = stack->pop(stack);//put the first operand where it belongs
+	
+	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
+		operand[1] = run_stack(stack);//assume top is a command
+		//note: this is how the operations are chained together
+	
+	return operand[0] * operand[1];//multiply the two operands
 }
 
 int divide(string_stack stack)//this may require additional libraries
 {
-
+	int operand[2];
+	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
+		return 0;
+	operand[0] = stack->pop(stack);//put the first operand where it belongs
+	
+	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
+		operand[1] = run_stack(stack);//assume top is a command
+		//note: this is how the operations are chained together
+	
+	return operand[0] / operand[1];//divide the two operands
 }
 
 int modulus(string_stack stack)
 {
-
+	int operand[2];
+	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
+		return 0;
+	operand[0] = stack->pop(stack);//put the first operand where it belongs
+	
+	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
+		operand[1] = run_stack(stack);//assume top is a command
+		//note: this is how the operations are chained together
+	
+	return operand[0] % operand[1];//mod the two operands
 }
-//end operands
+//end operations
 
 //This function checks if the given command is a valid command entry
 //If the entry is a command, it will return the appropriate command value
@@ -139,7 +216,7 @@ char isCommand(char *command)
 	acceptable strings for modulus:
 		"%"
 		"MOD"
-		"MODULUD"
+		"MODULUS"
 	*/
 	if( (strcmp(command, "%") == 0) || (strcmp(command, "MOD") == 0) || (strcmp(command, "MODULUS") == 0) )
 		return modulusCode;
@@ -194,18 +271,41 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
 				print_uart0("Exiting Program\n");
 				return(-1);
 			}
-			//TO DO: RUN COMMANDS ON STACK
+			//RUN COMMANDS ON STACK
 			else if (strcmp(buffer, "RUN\13") == 0)
 			{
+				//store results of instructions on stack here
+				int result = run_stack(stack);
+				int result_len = 2;//store decimal length here
+				for(int pow = 10; result >= pow; pow *= 10)
+				{
+					/*
+					add one to result length for each
+					increasing power of ten that is
+					less than the result
+					*/
+					result_len++;
+					//this gives result_len the necessary length for a string to contain the conversion of result
+				}
 				
+				char result_str[result_len];
+				for(int i = 0; i < result_len; i++)
+					result_str[i] = '\00';//zero the string
+				
+				//convert int to string
+				itoa(result, result_str, 10);
+				//print result
+				print_uart0("Result: ");
+				print_uart0((const char*) result_str);
+				print_uart0("\n");
 			}
 
 			//place buffered command in stack
 			if(isValid(buffer))
 			{
-				//Strip enter character
+				//Strip unparsable characters and whitespace
 				for(int i = 0; buffer [i] != '\00'; i++)
-					if(buffer[i] == '\13')
+					if(buffer[i] < 33)
 						buffer[i] = '\00';
 				stack->push(stack, buffer);
 			}
@@ -225,28 +325,6 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
 			return 0;
 		}
 
-		/*TO DO: REMOVE
-		if((buffer[position] == ':'))
-		{
-			buffer[position] = 0;
-			int sum = 0;
-			for(int c = 0; c < position; c++)
-			{
-				sum += buffer[c];
-			}
-			//make sure the buffer has enough space for the digits
-			char stringSum[(sum/10)+2];
-			for(int c = 0; c < 100; c++)//zero out the buffer
-			{
-				stringSum[c] = '\0';
-			}
-			itoa(sum, stringSum, 10);
-			const char *printSum = (const char *) stringSum;
-			print_uart0(printSum);
-			print_uart0("\n");
-			return position;
-		}*/
-
 		//TO DO: REPLACE CURRENT LINE RATHER THAN PRINT NEW ONE
 		position++;//iterate the position placement
 		//we will try to delete the previously printed line by sending the corrisponding VT100 escape code 
@@ -262,7 +340,7 @@ void c_entry()
 	//TO DO: make proper instructions
 	print_uart0("This program will store a buffer of your input.\n");
 	print_uart0("All inputs will be capitalized.\n");
-	print_uart0("Entering a \";\" character will submit the buffer to the stack.\n");
+	print_uart0("The buffered stirng will be added to a stack upon pressing enter.\n");
 	print_uart0("The stack can be run by entering \"RUN\".\n");
 	print_uart0("If you wish to quit the program, enter \"QUIT\" and submit.\n");
 
@@ -280,8 +358,10 @@ void c_entry()
 		position = uart_echo_buffer(UART0, buffer, position, instruction_stack);
 		if(position < 0)
 		{
+			instruction_stack->destroy(instruction_stack);
 			return;
 		}
 	}
+	instruction_stack->destroy(instruction_stack);//make sure to deallocate
 }
 

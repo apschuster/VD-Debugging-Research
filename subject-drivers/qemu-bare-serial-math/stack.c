@@ -55,8 +55,7 @@ void destroy(string_stack* self)
 	//go through the stack and deallocate all entries
 	for(int c = 0; c < self->size; c++)
 	{
-		//note that stack[c] may be a nullptr
-		//if it hasn't been allocated
+		//note: stack[c] may be a nullptr if it hasn't been allocated
 		free(self->stack[c]);
 	}
 	free(self->stack);//deallocate the stack itself
