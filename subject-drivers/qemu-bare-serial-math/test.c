@@ -3,11 +3,17 @@
 #include "stack.h"
 
 //The command codes
+/*
 const char additionCode = 1;
 const char subtractionCode = 2;
 const char multiplicationCode = 3;
 const char divisionCode = 4;
-const char modulusCode = 5;
+const char modulusCode = 5;*/
+#define additionCode 1
+#define subtractionCode 2
+#define multiplicationCode 3
+#define divisionCode 4
+#define modulusCode 5
 
 enum {
     RXFE = 0x10,//recieve flag
@@ -65,116 +71,6 @@ void print_uart0(const char *s) {
 		s++; /* Next char */
 	}
 }
-
-//the base command control function
-int run_stack(string_stack stack)
-{
-	//the top of the stack should always be a command when this is called
-	if( ! char commandCode = isCommand(stack->pop(stack)) )
-		//if not, return 0
-		return 0;
-
-	switch (commandCode)
-	{
-		//we now check the command code against the operation codes
-		case subtractionCode:
-			//have the subtract function handle the two operands
-			return subtract(stack);
-			break;
-		case additionCode:
-			//have the addition function handle the two operands
-			return add(stack);
-			break;
-		case multiplicationCode:
-			//have the multiply function handle the two operands
-			return multiply(stack);
-			break;
-		case divisionCode:
-			//have the division function handle the two operands
-			return divide(stack);
-			break;
-		case modulusCode:
-			//have the modulus function handle the two operands
-			return modulus(stack);
-			break;
-		default:
-			return 0;//if there is no match, return 0
-	}
-}
-
-//begin operations
-//note: the command itself should have been popped off,
-//we need only deal with the two operands
-int subtract(string_stack stack)
-{
-	int operand[2];
-	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
-		return 0;
-	operand[0] = stack->pop(stack);//put the first operand where it belongs
-	
-	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
-		operand[1] = run_stack(stack);//assume top is a command
-		//note: this is how the operations are chained together
-	
-	return operand[0] - operand[1];//subtract the two operands
-}
-
-int add(string_stack stack)
-{
-	int operand[2];
-	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
-		return 0;
-	operand[0] = stack->pop(stack);//put the first operand where it belongs
-	
-	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
-		operand[1] = run_stack(stack);//assume top is a command
-		//note: this is how the operations are chained together
-	
-	return operand[0] + operand[1];//add the two operands
-}
-
-int multiply(string_stack stack)
-{
-	int operand[2];
-	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
-		return 0;
-	operand[0] = stack->pop(stack);//put the first operand where it belongs
-	
-	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
-		operand[1] = run_stack(stack);//assume top is a command
-		//note: this is how the operations are chained together
-	
-	return operand[0] * operand[1];//multiply the two operands
-}
-
-int divide(string_stack stack)//this may require additional libraries
-{
-	int operand[2];
-	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
-		return 0;
-	operand[0] = stack->pop(stack);//put the first operand where it belongs
-	
-	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
-		operand[1] = run_stack(stack);//assume top is a command
-		//note: this is how the operations are chained together
-	
-	return operand[0] / operand[1];//divide the two operands
-}
-
-int modulus(string_stack stack)
-{
-	int operand[2];
-	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
-		return 0;
-	operand[0] = stack->pop(stack);//put the first operand where it belongs
-	
-	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
-		operand[1] = run_stack(stack);//assume top is a command
-		//note: this is how the operations are chained together
-	
-	return operand[0] % operand[1];//mod the two operands
-}
-//end operations
 
 //This function checks if the given command is a valid command entry
 //If the entry is a command, it will return the appropriate command value
@@ -236,6 +132,129 @@ char isNum(char *command)
 char isValid(char *command)
 {
 	return isCommand(command) && isNum(command);
+}
+
+int run_stack(string_stack *stack);
+
+//begin operations
+//note: the command itself should have been popped off,
+//we need only deal with the two operands
+int subtract(string_stack *stack)
+{
+	int operand[2];
+	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
+		return 0;
+	operand[0] = atoi(stack->pop(stack));//put the first operand where it belongs
+	
+	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
+		operand[1] = run_stack(stack);//assume top is a command
+		//note: this is how the operations are chained together
+	else//else assign the second operand normally
+		operand[1] = atoi(stack->pop(stack));
+	
+	return operand[0] - operand[1];//subtract the two operands
+}
+
+int add(string_stack *stack)
+{
+	int operand[2];
+	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
+		return 0;
+	operand[0] = atoi(stack->pop(stack));//put the first operand where it belongs
+	
+	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
+		operand[1] = run_stack(stack);//assume top is a command
+		//note: this is how the operations are chained together
+	else//else assign the second operand normally
+		operand[1] = atoi(stack->pop(stack));
+
+	return operand[0] + operand[1];//add the two operands
+}
+
+int multiply(string_stack *stack)
+{
+	int operand[2];
+	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
+		return 0;
+	operand[0] = atoi(stack->pop(stack));//put the first operand where it belongs
+	
+	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
+		operand[1] = run_stack(stack);//assume top is a command
+		//note: this is how the operations are chained together
+	else//else assign the second operand normally
+		operand[1] = atoi(stack->pop(stack));
+	
+	return operand[0] * operand[1];//multiply the two operands
+}
+
+int divide(string_stack *stack)//this may require additional libraries
+{
+	int operand[2];
+	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
+		return 0;
+	operand[0] = atoi(stack->pop(stack));//put the first operand where it belongs
+	
+	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
+		operand[1] = run_stack(stack);//assume top is a command
+		//note: this is how the operations are chained together
+	else//else assign the second operand normally
+		operand[1] = atoi(stack->pop(stack));
+	
+	return operand[0] / operand[1];//divide the two operands
+}
+
+int modulus(string_stack *stack)
+{
+	int operand[2];
+	if( ! isNum(stack->top(stack)) )//if the top of stack is not numerical
+		return 0;
+	operand[0] = atoi(stack->pop(stack));//put the first operand where it belongs
+	
+	if( ! isNum(stack->top(stack)) )//if the second operand is nonnumerical
+		operand[1] = run_stack(stack);//assume top is a command
+		//note: this is how the operations are chained together
+	else//else assign the second operand normally
+		operand[1] = atoi(stack->pop(stack));
+	
+	return operand[0] % operand[1];//mod the two operands
+}
+//end operations
+
+//the base command control function
+int run_stack(string_stack *stack)
+{
+	 char commandCode = isCommand(stack->pop(stack));
+	//the top of the stack should always be a command when this is called
+	if( !commandCode )
+		//if not, return 0
+		return 0;
+
+	switch (commandCode)
+	{
+		//we now check the command code against the operation codes
+		case subtractionCode:
+			//have the subtract function handle the two operands
+			return subtract(stack);
+			break;
+		case additionCode:
+			//have the addition function handle the two operands
+			return add(stack);
+			break;
+		case multiplicationCode:
+			//have the multiply function handle the two operands
+			return multiply(stack);
+			break;
+		case divisionCode:
+			//have the division function handle the two operands
+			return divide(stack);
+			break;
+		case modulusCode:
+			//have the modulus function handle the two operands
+			return modulus(stack);
+			break;
+		default:
+			return 0;//if there is no match, return 0
+	}
 }
     
 //This loop will handle the buffer I/O
@@ -318,7 +337,7 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
 
 			//PRINT THE LAST LINE SUBMITTED
 			print_uart0("Line Recorded\n");
-			char* lastSubmission;
+			char* lastSubmission = "";
 			strcpy(lastSubmission, stack->top(stack));
 			print_uart0((const char*)lastSubmission);
 			print_uart0("\n");
@@ -346,7 +365,7 @@ void c_entry()
 
 	char buffer[100];
 	int position;
-	string_stack* instruction_stack;
+	string_stack* instruction_stack = NULL;
 	instruction_stack = instruction_stack->create();
 	//zero out the buffer
 	for(int c = 0; c < 100; c++)
