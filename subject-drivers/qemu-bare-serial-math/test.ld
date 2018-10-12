@@ -13,10 +13,10 @@ SECTIONS
 		__end__ = .;
 		PROVIDE(end = .);
 		PROVIDE(_heap_start = end);
-		. = . + 0x800;/* 2kB of heap memory*/
+		. = . + 0x1000;/* 4kB of heap memory*/
 		PROVIDE(_heap_end = .);
 	}
-	. = . + 0x800; /* 2kB of stack memory */
+	. = . + 0x1000; /* 4kB of stack memory */
 	stack_top = .;
 }
 

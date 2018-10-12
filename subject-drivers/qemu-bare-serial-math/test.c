@@ -260,7 +260,7 @@ int run_stack(string_stack *stack)
 //This loop will handle the buffer I/O
 static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_stack *stack) 
 {
-    if ((uart->FR & RXFE) == 0) 
+    	if ((uart->FR & RXFE) == 0) 
 	{
         	while(uart->FR & TXFF) { };
 		buffer[position] = upperchar(uart->DR);
@@ -283,15 +283,15 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
 
 		//if we recieve the submission character (Enter) or we reach the end of buffer
 		//note that we need a zero byte at the end of the buffer so we reset once we fill the last bit in the buffer
-		else if( (buffer[position] == '\13') || (position > 98) )
+		else if( (buffer[position] == '\r') || (position > 98) )
 		{
-			if(strcmp(buffer, "QUIT\13") == 0)
+			if(strcmp(buffer, "QUIT\r") == 0)
 			{
 				print_uart0("Exiting Program\n");
 				return(-1);
 			}
 			//RUN COMMANDS ON STACK
-			else if (strcmp(buffer, "RUN\13") == 0)
+			else if (strcmp(buffer, "RUN\r") == 0)
 			{
 				//store results of instructions on stack here
 				int result = run_stack(stack);
@@ -319,14 +319,31 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
 				print_uart0("\n");
 			}
 
+			//Strip unparsable characters and whitespace
+			for(int i = 0; buffer [i] != '\00'; i++)
+				if(buffer[i] < 33 || buffer[i] == '\r')
+					buffer[i] = '\00';
+
 			//place buffered command in stack
+			else if(isValid(buffer))
+			{
+				stack->push(stack, buffer);
+			}
+
+			print_uart0("\r");
+			//max buffer size is 100, so print that many spaces
+			for(int i = 0; i < 100; i++)
+				print_uart0("\00");
+			print_uart0("\n");
+
 			if(isValid(buffer))
 			{
-				//Strip unparsable characters and whitespace
-				for(int i = 0; buffer [i] != '\00'; i++)
-					if(buffer[i] < 33)
-						buffer[i] = '\00';
-				stack->push(stack, buffer);
+				//PRINT THE LAST LINE SUBMITTED
+				print_uart0("Line Recorded: ");
+				char* lastSubmission = "";
+				strcpy(lastSubmission, stack->top(stack));
+				print_uart0((const char*)lastSubmission);
+				print_uart0("\n");
 			}
 
 			//zero out buffer
@@ -335,19 +352,15 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
 				buffer[c] = '\0';
 			}
 
-			//PRINT THE LAST LINE SUBMITTED
-			print_uart0("Line Recorded\n");
-			char* lastSubmission = "";
-			strcpy(lastSubmission, stack->top(stack));
-			print_uart0((const char*)lastSubmission);
-			print_uart0("\n");
 			return 0;
 		}
 
-		//TO DO: REPLACE CURRENT LINE RATHER THAN PRINT NEW ONE
 		position++;//iterate the position placement
-		//we will try to delete the previously printed line by sending the corrisponding VT100 escape code 
-		print_uart0("27[2K");
+		//we will try to delete the previously printed line by using carrage return and blank space
+		print_uart0("\r");
+		//max buffer size is 100, so print that many spaces
+		for(int i = 0; i < 100; i++)
+			print_uart0("\00");
 		const char *printBuffer = (const char *)buffer;
 		print_uart0(printBuffer);
 	}
@@ -365,8 +378,7 @@ void c_entry()
 
 	char buffer[100];
 	int position;
-	string_stack* instruction_stack = NULL;
-	instruction_stack = instruction_stack->create();
+	string_stack* instruction_stack = create();
 	//zero out the buffer
 	for(int c = 0; c < 100; c++)
 	{
