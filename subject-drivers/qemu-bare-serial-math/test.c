@@ -131,7 +131,7 @@ char isNum(char *command)
 //return zero if invalid, nonzero otherwise
 char isValid(char *command)
 {
-	return isCommand(command) && isNum(command);
+	return isCommand(command) || isNum(command);
 }
 
 int run_stack(string_stack *stack);
@@ -319,22 +319,24 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
 				print_uart0("\n");
 			}
 
-			//Strip unparsable characters and whitespace
+			//Strip unparsable characters, and returns
 			for(int i = 0; buffer [i] != '\00'; i++)
-				if(buffer[i] < 33 || buffer[i] == '\r')
+			{
+				if(buffer[i] < 32 || buffer[i] == '\r')
 					buffer[i] = '\00';
+			}
 
 			//place buffered command in stack
-			else if(isValid(buffer))
+			if(isValid(buffer))
 			{
 				stack->push(stack, buffer);
 			}
 
 			print_uart0("\r");
-			//max buffer size is 100, so print that many spaces
+			//max buffer size is 100, so print that many blanks
 			for(int i = 0; i < 100; i++)
 				print_uart0("\00");
-			print_uart0("\n");
+			print_uart0("\r\n");
 
 			if(isValid(buffer))
 			{
