@@ -265,20 +265,22 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
         	while(uart->FR & TXFF) { };
 		buffer[position] = upperchar(uart->DR);
 
-		//it may be simpler to pick a different deletion character
-		if (buffer[position] == 8)
+		//deletion character ;
+		if (buffer[position] == ';')
 		{
 			//make sure we don't delete beyond current line
 			if(position > 0)
 			{
 				//replace previous printed character with blank
-				print_uart0("\b\00");
+				print_uart0("\b ");
+				//print_uart0("\00");
 				//blank current and previous character
 				buffer[position] = '\00';
 				position--;
 				buffer[position] = '\00';
+				position--;//this one is to negate iteration
 			}
-			return position;
+			//return position;
 		}
 
 		//if we recieve the submission character (Enter) or we reach the end of buffer
@@ -287,8 +289,24 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
 		{
 			if(strcmp(buffer, "QUIT\r") == 0)
 			{
-				print_uart0("Exiting Program\n");
+				print_uart0("\nExiting Program\n");
 				return(-1);
+			}
+			else if(strcmp(buffer, "HELP\r") == 0)
+			{
+				print_uart0("\nINSTRUCTIONS:\n");
+				print_uart0("Any numbers entered will be added to the stack as operands.\n");
+				print_uart0("Operators are as follows:\n");
+				print_uart0("\t ADDITION: \"ADD\" \"+\"\n");
+				print_uart0("\t SUBTRACTION: \"SUBTRACT\" \"SUB\" \"-\"\n");
+				print_uart0("\t MULTIPLICATION: \"MULTIPLY\" \"MUL\" \"*\" \n");
+				print_uart0("\t DIVISION: \"DIVIDE\" \"DIV\" \"/\" \n");
+				print_uart0("\t MODULUS: \"MODULUS\" \"MOD\" \"%\" \n");
+				print_uart0("The second operand in the equation should be entered first, followed by the first operator, and then the operator.\n");
+				print_uart0("\t e.g. 7 + 5 should be entered in the order 5, 7, ADD\n");
+				print_uart0("Operations can be chained together by entering only one operand between operators.\n");
+				print_uart0("\t e.g. 20 - (7 + 5) should be entered in the order 5, 7, ADD, 20, SUB\n");
+				print_uart0("NOTE: This program is restricted to c integer arithmetic.\n");
 			}
 			//RUN COMMANDS ON STACK
 			else if (strcmp(buffer, "RUN\r") == 0)
@@ -314,7 +332,7 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
 				//convert int to string
 				itoa(result, result_str, 10);
 				//print result
-				print_uart0("Result: ");
+				print_uart0("\nResult: ");
 				print_uart0((const char*) result_str);
 				print_uart0("\n");
 			}
@@ -363,6 +381,7 @@ static int uart_echo_buffer(pl011_T *uart, char* buffer, int position, string_st
 		//max buffer size is 100, so print that many spaces
 		for(int i = 0; i < 100; i++)
 			print_uart0("\00");
+		print_uart0("\r");
 		const char *printBuffer = (const char *)buffer;
 		print_uart0(printBuffer);
 	}
@@ -374,8 +393,10 @@ void c_entry()
 	//TO DO: make proper instructions
 	print_uart0("This program will store a buffer of your input.\n");
 	print_uart0("All inputs will be capitalized.\n");
-	print_uart0("The buffered stirng will be added to a stack upon pressing enter.\n");
+	print_uart0("The buffered stirng will be added to a stack upon pressing ENTER.\n");
+	print_uart0("The \';\' character may be used to delete previous characters\n");
 	print_uart0("The stack can be run by entering \"RUN\".\n");
+	print_uart0("For more details on how the program works, enter \"HELP\".\n");
 	print_uart0("If you wish to quit the program, enter \"QUIT\" and submit.\n");
 
 	char buffer[100];

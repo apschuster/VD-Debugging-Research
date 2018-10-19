@@ -37,18 +37,6 @@ _sbrk (int incr)
   	return (caddr_t) prev_heap_end;
 }
 
-//the constructor for the stack
-string_stack* create()
-{
-	//dynamically assign memory of appropriate size to a new string_stack
-	string_stack* result = (string_stack*) malloc(sizeof(string_stack));
-	//assign enough memory to the stack initially for 10 strings
-	result->stack = (char**) malloc(sizeof(char*) * 10);
-	result->size = 10;//we have space for 10 entries
-	result->stack_pointer = -1;//the stack is empty
-	return result;
-}
-
 //the destructor for the stack
 void destroy(string_stack* self)
 {
@@ -130,4 +118,26 @@ char isEmpty(string_stack* self)
 {
 	//stack is empty if stack pointer is less than 0
 	return self->stack_pointer < 0;
+}
+
+//the constructor for the stack
+string_stack* create()
+{
+	//dynamically assign memory of appropriate size to a new string_stack
+	string_stack* result = (string_stack*) malloc(sizeof(string_stack));
+	//assign enough memory to the stack initially for 10 strings
+	result->stack = (char**) malloc(sizeof(char*) * 10);
+	result->size = 10;//we have space for 10 entries
+	result->stack_pointer = -1;//the stack is empty
+	//assign the function pointers
+	result->destroy = destroy;
+	result->resize = resize;
+	result->pop = pop;
+	result->push = push;
+	result->top = top;
+	result->isFull = isFull;
+	result->isEmpty = isEmpty;
+	result->create = create;
+	//return the stack we've created
+	return result;
 }

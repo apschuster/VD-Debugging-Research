@@ -14,7 +14,7 @@ struct string_stack
 	void (*resize) (string_stack* self);
 	char* (*pop) (string_stack* self);
 	char* (*top) (string_stack* self);
-	char* (*push) (string_stack* self, char* entry);
+	void (*push) (string_stack* self, char* entry);
 	char (*isFull) (string_stack* self);
 	char (*isEmpty) (string_stack* self);
 	int size;//for storing the current maximum number of strings in stack
