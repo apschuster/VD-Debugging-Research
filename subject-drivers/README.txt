@@ -1,3 +1,6 @@
+Kyle Nelson 10/24/18
+kyle.nelson@uky.edu
+
 Project Github:
 	https://github.com/darin-ellis7/VD-Debugging-Research
 
