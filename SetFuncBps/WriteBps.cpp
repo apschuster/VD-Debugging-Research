@@ -29,6 +29,9 @@ int main(int argc, char * argv[])
                 cout << "bp file failed" << endl;
                 return -1;
         }
+	
+	//disable pagination so we can run the whole thing without stopping
+	bpFile << "set pagination off\n";
 
 	string line;
 	string bpCommand;
@@ -51,7 +54,7 @@ int main(int argc, char * argv[])
 			<< "continue" << '\n';
 	}
 
-	bpFile << "quit" << '\n';
+	//bpFile << "quit" << '\n';
 
 	symNameFile.close();
 	bpFile.close();

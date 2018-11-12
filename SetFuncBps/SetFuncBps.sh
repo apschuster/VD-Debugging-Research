@@ -8,7 +8,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 #This is to find and set breakpoints within the VD.
 
-readelf -s $1 | awk '($4 ~ "FUNC")&&((/'$2'/)&&((/_read/)||(/_write/)))&&(!/trace/) {print $8}' > func_names.txt
+#readelf -s $1 | awk '($4 ~ "FUNC")&&( (/$2/)&&( (/_read/)||(/_write/) ) )&&(!/trace/) {print $8}' > func_names.txt
+readelf -Ws $QEMU | grep -E '_read|_write' | awk '($4 ~ "FUNC") {print $8}' > func_names.txt
+
 $DIR/ConstructBpFile func_names.txt bpFile.gdb
 
 #cat bpFile.gdb
@@ -29,4 +31,4 @@ PID="$(ps -aux | grep $QEMU | awk '{print $2; exit;}')"
 #echo "$PID"
 
 #sudo gdb -p <PID> and load the constructed script
-sudo gdb -p "$PID" bpFile.gdb
+sudo gdb -ex "attach $PID" -ex 'source bpFile.gdb' -ex 'continue'
