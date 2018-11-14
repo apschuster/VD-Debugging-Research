@@ -1,3 +1,6 @@
+#store the location of the ARM qemu
+QEMU="/home/kyle/research/qemu-3.0.0-rc0/arm-softmmu/qemu-system-arm"
+
 test.bin: test.elf
 	arm-none-eabi-objcopy -O binary test.elf test.bin
 
@@ -19,7 +22,7 @@ clean:
 	rm -rf test.bin
 
 run: test.bin
-	qemu-arm -m 128M -M versatilepb -m 128M -kernel $< -serial stdio
+	$QEMU -m 128M -M versatilepb -m 128M -kernel $< -serial stdio
 
 debug: test.bin
-	qemu-arm -m 128M -M versatilepb -m 128M -kernel $< -serial stdio -s -S
+	$QEMU -m 128M -M versatilepb -m 128M -kernel $< -serial stdio -s -S
