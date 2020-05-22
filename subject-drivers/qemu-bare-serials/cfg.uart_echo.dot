@@ -1,0 +1,17 @@
+digraph "CFG for 'uart_echo' function" {
+	label="CFG for 'uart_echo' function";
+
+	Node0x40508a0 [shape=record,label="{%1|{<s0>T|<s1>F}}"];
+	Node0x40508a0:s0 -> Node0x40508f0;
+	Node0x40508a0:s1 -> Node0x4050a30;
+	Node0x40508f0 [shape=record,label="{%8}"];
+	Node0x40508f0 -> Node0x4050940;
+	Node0x4050940 [shape=record,label="{%9|{<s0>T|<s1>F}}"];
+	Node0x4050940:s0 -> Node0x4050990;
+	Node0x4050940:s1 -> Node0x40509e0;
+	Node0x4050990 [shape=record,label="{%15}"];
+	Node0x4050990 -> Node0x4050940;
+	Node0x40509e0 [shape=record,label="{%16}"];
+	Node0x40509e0 -> Node0x4050a30;
+	Node0x4050a30 [shape=record,label="{%25}"];
+}
