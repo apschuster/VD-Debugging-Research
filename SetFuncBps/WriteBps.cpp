@@ -51,6 +51,8 @@ int main(int argc, char * argv[])
 	{
 		bpFile << "info locals" << '\n'
 			<< "info args" << '\n'
+			<< "shell python parse.py"     << '\n' //run the python script at each breakpoint
+			<< "source changeVars.gdb"      << '\n' //source the .gdb script produced from the python script at each breakpoint. This changes the local variables/arguments at each breakpoint
 			<< "continue" << '\n';
 	}
 
