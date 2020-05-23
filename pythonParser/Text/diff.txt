@@ -1,0 +1,12 @@
+Difference Location: 19, seqlock_read_begin (sl=0x561d4b35af90 <timers_state+16>) /home/kyle/research/qemu-3.0.0-rc0/include/qemu/seqlock.h:51 
+ret = 22045 Arguments: sl = 0x561d4b35af90 <timers_state+16> 
+ret = 220 Arguments: sl = 0x561d4b35af90 <timers_state+16> 
+
+Difference Location: 2492, fd_chr_read_poll (opaque=0x561d4bd6f720) chardev/char-fd.c:74 
+chr = 0x561d4bd91380 __func__ = "fd_chr_read_poll" s = 0x561d4c240480 Arguments: opaque = 0x561d4bd6f720 
+chr = 0x561d4bd91381 __func__ = "fd_chr_read_poll" s = 0x561d4c240480 Arguments: opaque = 0x561d4bd6f720 
+
+Difference Location: 2756, qemu_chr_be_can_write (s=0x561d4c56bfd0) chardev/char.c:161 
+be = 0x561d4c23f6d0 Arguments: s = 0x561d4c56bfd0 [Switching to Thread 0x7f8ad5fff700 (LWP 28365)] 
+be = 0x561d4c23f6d5 Arguments: s = 0x561d4c56bfd0 [Switching to Thread 0x7f8ad5fff700 (LWP 28365)] 
+
