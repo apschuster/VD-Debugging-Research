@@ -74,7 +74,7 @@ alias python='/usr/bin/python3.6'
 
 ## Bugs/Limitations
 
-At the time of creating this program, I have been unable to get the SetFuncBps working in its intended fashion. By that, I mean the bash script seems to halt when the qemu process ID is hooked into the gdb session. I'm unsure why this is happening, and it has been happening ever since I have been forced to work remotely from home (off UK's campus). I want to make it clear the SetFuncBps worked for me (albeit unreliably) while I was on campus. I believe this issue may be linked to network problems, I go over this in my research report as well.
+At the time of creating this program, I have been unable to get the SetFuncBps working in its intended fashion. By that, I mean the bash script seems to halt when the qemu process ID is hooked into the gdb session. I'm unsure why this is happening, and it has been happening ever since I have been forced to work remotely from home (off UK's campus). I want to make it clear the SetFuncBps worked for me (albeit unreliably) while I was on campus. 
 
 Because of this, please pay attention to potential issues that could arise below.
 
