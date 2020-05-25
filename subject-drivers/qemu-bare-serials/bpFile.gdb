@@ -1,5 +1,6 @@
 set pagination off
 set logging on
+set logging overwrite on
 break png_destroy_write_struct@PNG16_0
 break png_write_row@PNG16_0
 break png_set_write_fn@PNG16_0
