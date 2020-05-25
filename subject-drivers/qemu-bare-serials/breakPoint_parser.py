@@ -77,8 +77,8 @@ def main():
         localVars[i]=localVars[i].replace(' ','')
         i+=1
 
-    print(arguments)
-    print(localVars)
+    #print(arguments)
+    #print(localVars)
     flag=0
     #Check if there are local variables or not, will change file writing process
     if(localVars[0]=='Nolocals'):
