@@ -1,6 +1,7 @@
 # Research
 
 VD-Debugging-Research contains code and documentation pertaining to academic research into debugging virtual devices/drivers.
+* Refer to this fork for all of the most recent files. Darins github is the old directory that existed before I (Alex Schuster) started working on this. Refer to that for older versions of code to see what was changed. This directory is called `VD-Debugging-ResearchNew` within the OCI VM.
 
 ## pythonParser
 * This directory contains the python script that is utitilized in conjuction with the .gdb file that is created from the SetFuncBps. There is a Readme.md that goes into more details about this script within said directory.
